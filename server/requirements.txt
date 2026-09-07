@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+langchain
+langchain-community
+langchain-groq
+langchain-classic
+langchain-core
+langchain-text-splitters
+pinecone
+fastembed
+python-dotenv
+pypdf
+tqdm
+rank-bm25
+ragas
+datasets

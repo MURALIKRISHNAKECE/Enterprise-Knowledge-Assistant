@@ -1,0 +1,30 @@
+services:
+  # ── Backend (FastAPI) ─────────────────────────────────
+  - type: web
+    name: enterprise-assistant-backend
+    runtime: python
+    rootDir: server
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port 10000
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
+      - key: PINECONE_API_KEY
+        sync: false
+      - key: PINECONE_INDEX_NAME
+        value: enterprise-index
+      - key: PINECONE_ENVIRONMENT
+        value: us-east-1
+      - key: PORT
+        value: 10000
+
+  # ── Frontend (Streamlit) ──────────────────────────────
+  - type: web
+    name: enterprise-assistant-frontend
+    runtime: python
+    rootDir: client
+    buildCommand: pip install -r requirements.txt
+    startCommand: streamlit run app.py --server.port 10000 --server.address 0.0.0.0 --theme.base light --theme.backgroundColor "#f8fafc" --theme.secondaryBackgroundColor "#f1f5f9" --theme.textColor "#0f172a" --theme.primaryColor "#3b82f6"
+    envVars:
+      - key: API_BASE_URL
+        sync: false

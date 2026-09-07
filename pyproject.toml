@@ -1,0 +1,18 @@
+[project]
+name = "ai-document-assistant"
+version = "0.1.0"
+description = "A RAG-powered document Q&A assistant built with LangChain, FastAPI, Groq LLM, Pinecone, and Streamlit"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "streamlit",
+    "langchain",
+    "langchain-community",
+    "langchain-groq",
+    "pinecone-client",
+    "sentence-transformers",
+    "python-dotenv",
+    "pypdf",
+]

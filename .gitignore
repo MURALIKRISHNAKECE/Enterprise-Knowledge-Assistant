@@ -1,0 +1,10 @@
+.venv/
+.env
+__pycache__/
+*.pyc
+*.pyo
+server/bm25_index.pkl
+server/uploaded_docs/*.pdf
+.streamlit/secrets.toml
+.DS_Store
+Thumbs.db
