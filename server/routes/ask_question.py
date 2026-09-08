@@ -3,7 +3,7 @@ from fastapi import APIRouter, Form
 from fastapi.responses import JSONResponse
 from modules.llm import get_llm_chain
 from modules.query_handlers import query_chain
-from modules.load_vectorstore import load_bm25_index
+from modules.load_vectorstore import load_bm25_index, embed_model
 from modules.evaluation import run_ragas_evaluation
 from langchain_core.documents import Document
 from langchain_core.retrievers import BaseRetriever
@@ -16,17 +16,13 @@ router = APIRouter()
 
 
 def reciprocal_rank_fusion(dense_docs, bm25_docs, k=60):
-    """Combine dense and BM25 results using Reciprocal Rank Fusion."""
     scores = {}
-
     for rank, doc in enumerate(dense_docs):
         key = doc.page_content
         scores[key] = scores.get(key, 0) + 1 / (k + rank + 1)
-
     for rank, doc in enumerate(bm25_docs):
         key = doc.page_content
         scores[key] = scores.get(key, 0) + 1 / (k + rank + 1)
-
     all_docs = {doc.page_content: doc for doc in dense_docs + bm25_docs}
     ranked = sorted(scores.items(), key=lambda x: x[1], reverse=True)
     return [all_docs[key] for key, _ in ranked[:5]]
@@ -37,13 +33,10 @@ async def ask_question(question: str = Form(...)):
     try:
         logger.info(f"User query: {question}")
 
-        # ── Dense retrieval (Pinecone) ──────────────────────────
+        # ── Dense retrieval (Pinecone + FastEmbed) ──────────────
         pc = Pinecone(api_key=os.environ["PINECONE_API_KEY"])
         index = pc.Index(os.environ["PINECONE_INDEX_NAME"])
-        embed_model = HuggingFaceEmbeddings(
-            model_name="sentence-transformers/all-mpnet-base-v2"
-        )
-        embedded_query = embed_model.embed_query(question)
+        embedded_query = list(embed_model.query_embed(question))[0].tolist()
         res = index.query(vector=embedded_query, top_k=5, include_metadata=True)
 
         dense_docs = [
