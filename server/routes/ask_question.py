@@ -7,7 +7,6 @@ from modules.load_vectorstore import load_bm25_index
 from modules.evaluation import run_ragas_evaluation
 from langchain_core.documents import Document
 from langchain_core.retrievers import BaseRetriever
-from langchain_huggingface import HuggingFaceEmbeddings
 from pinecone import Pinecone
 from pydantic import Field
 from typing import List, Optional
